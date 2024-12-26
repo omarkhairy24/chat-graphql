@@ -1,0 +1,109 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type UserResponse {
+  id: String!
+  username: String!
+  name: String!
+  email: String!
+  image: String
+}
+
+type LoginResponse {
+  token: String!
+  user: UserResponse!
+}
+
+type FriendRequests {
+  id: Float!
+  senderId: String!
+  receiverId: String!
+  sender: UserResponse!
+  reciever: UserResponse!
+}
+
+type Message {
+  id: String!
+  senderId: String!
+  content: String!
+  images: [String!]!
+  sender: UserResponse
+}
+
+type Chat {
+  id: String!
+  userId: String!
+  friendId: String!
+  messages: [Message!]
+  user: UserResponse
+  friend: UserResponse
+}
+
+type Info {
+  id: Float!
+  user_id: String!
+  name: String!
+  username: String!
+  image: String
+}
+
+type SingleChat {
+  ChatInfo: Info!
+  messages: [Message!]
+}
+
+type Query {
+  search_users(query: String!): [UserResponse!]!
+  Me: UserResponse!
+  getPendings: [FriendRequests!]!
+  getMyRequests: [FriendRequests!]!
+  getChats: [Chat!]!
+  getChat(friendId: String!): SingleChat!
+}
+
+type Mutation {
+  register(input: RegisterInput!): String!
+  verify(input: VerifyInput!): String!
+  login(input: LoginInput!): LoginResponse!
+  update_password(input: UpdatePasswordInput!): UserResponse!
+  updateInfo(input: UserInfoInput, file: Upload): UserResponse!
+  sendRequest(receiverId: String!): String!
+  acceptRequest(senderId: String!): String!
+  rejectRequest(senderId: String!): String!
+  sendMessage(chatId: Float!, content: String!, files: [Upload!]): Message!
+}
+
+input RegisterInput {
+  username: String!
+  name: String!
+  email: String!
+  password: String!
+}
+
+input VerifyInput {
+  email: String!
+  otp: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input UpdatePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
+input UserInfoInput {
+  name: String
+  username: String
+}
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
+
+type Subscription {
+  newMessage(chatId: Float!): Message!
+}
