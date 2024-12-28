@@ -2,14 +2,16 @@ import { BadRequestException, Injectable, NotFoundException } from '@nestjs/comm
 import { InjectModel } from '@nestjs/sequelize';
 import { Messages } from './messages.entity';
 import {Sequelize} from 'sequelize-typescript'
-import { QueryTypes,Op } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 import { FriendsService } from 'src/friends/friends.service';
+import { GroupService } from 'src/group/group.service';
 
 @Injectable()
 export class MessagesService {
     constructor(
         @InjectModel(Messages) private messages: typeof Messages,
         private chat: FriendsService,
+        private groupService: GroupService,
         private sequelize: Sequelize
     ){}
 
@@ -35,6 +37,26 @@ export class MessagesService {
         return message;
     }
 
+    async sendGroupMessage(senderId:string,groupId:number,content:string, images:string[] ){
+        const group = await this.groupService.findGroup(groupId)
+        if(!group) throw new NotFoundException('group not found.');
+
+        const user = await this.groupService.findUser(groupId,senderId);
+
+        if(!user) throw new BadRequestException('you are not member of this group.');
+
+        if(!content && !images) throw new BadRequestException('you must provide content or image');
+
+        const message = await this.messages.create({
+            groupId:group.id,
+            senderId:senderId,
+            content:content,
+            images:images || [],
+        })
+        
+        return message;
+    }
+
     async getChats(userId:string){
         return this.chat.getChats(userId)
     }
@@ -52,13 +74,15 @@ export class MessagesService {
                 replacements: [userId, userId, userId, friendId, friendId, userId],
                 type: QueryTypes.SELECT,
         });
+        
         // const chat = await this.chat.findById(chatId);
         if(!chat) throw new NotFoundException('chat not found');
         const messages = await this.messages.findAll({
             where:{
                 //@ts-ignore
                 chatId:chat[0].id
-            }
+            },
+            order: [['createdAt', 'DESC']]
         });
 
         return {ChatInfo:chat[0],messages:messages}

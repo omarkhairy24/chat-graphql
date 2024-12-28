@@ -8,13 +8,16 @@ import { UploadService } from 'src/upload.service';
 import { DataLoaderService } from 'src/loader.service';
 import { UsersModule } from 'src/users/users.module';
 import { MessageResolver } from './message.resolver';
+import { GroupModule } from 'src/group/group.module';
 
 @Module({
   imports:[
     SequelizeModule.forFeature([Messages]),
+    GroupModule,
     FriendsModule,
     UsersModule
   ],
-  providers: [Chatesolver,MessageResolver,MessagesService,UploadService,DataLoaderService]
+  providers: [Chatesolver,MessageResolver,MessagesService,UploadService,DataLoaderService],
+  exports:[MessagesService]
 })
 export class MessagesModule {}

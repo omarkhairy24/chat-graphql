@@ -1,6 +1,7 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
 import { ChatRoom } from "src/friends/chat.entity";
+import { Group } from "src/group/group.entity";
 import { User } from "src/users/user.entity";
 
 @Table
@@ -19,6 +20,13 @@ export class Messages extends Model {
 
     @BelongsTo(()=>ChatRoom)
     chat:ChatRoom
+
+    @ForeignKey(()=>Group)
+    @Column
+    groupId:number;
+
+    @BelongsTo(()=>Group)
+    group:Group
 
     @ForeignKey(()=>User)
     @Column({allowNull:false})

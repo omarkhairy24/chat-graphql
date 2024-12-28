@@ -93,7 +93,7 @@ export class FriendsService {
     async getMyPendings(userId:string){
         const pendings = await this.fReq.findAll({
             where:{
-                reciverId:userId
+                receiverId:userId
             }
         });
 

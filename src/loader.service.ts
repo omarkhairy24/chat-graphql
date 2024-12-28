@@ -2,6 +2,7 @@ import * as DataLoader from 'dataloader';
 import { Injectable, Scope } from '@nestjs/common';
 import { UsersService } from './users/users.service';
 import { FriendsService } from './friends/friends.service';
+import { GroupService } from './group/group.service';
 // import { MessagesService } from './messages/chat.service';
 
 @Injectable()
@@ -9,6 +10,7 @@ export class DataLoaderService {
     constructor(
         private userService: UsersService,
         private chatService: FriendsService,
+        private groupService: GroupService
         // private messageService: MessagesService,
         
     ){}
@@ -31,5 +33,18 @@ export class DataLoaderService {
     //     const messagesMap = new Map(messages.map((message)=> [message.id,message]));
     //     return chatIds.map((id)=> messagesMap.get(id));
     // });
+
+    public groupMemberLoader = new DataLoader(async (groupIds:number[])=>{
+        const groupMembers = await this.groupService.findMembresByIds(groupIds);
+        const memberMap = new Map();
+        groupMembers.forEach(member=>{
+            if(!memberMap.has(member.groupId)){
+                memberMap.set(member.groupId, [])
+            }
+            memberMap.get(member.groupId).push(member)
+        })
+        
+        return groupIds.map((id)=> memberMap.get(id)||[]);
+    })
 
 }

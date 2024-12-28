@@ -12,6 +12,7 @@ import { graphqlUploadExpress } from 'graphql-upload-ts';
 import { FriendsModule } from './friends/friends.module';
 import { MessagesModule } from './messages/messages.module';
 import { Dialect } from 'sequelize';
+import { GroupModule } from './group/group.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,7 +47,8 @@ import { Dialect } from 'sequelize';
     UsersModule, 
     MailModule,
     FriendsModule,
-    MessagesModule
+    MessagesModule,
+    GroupModule
   ],
   controllers: [AppController],
   providers: [AppService],

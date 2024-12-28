@@ -5,7 +5,7 @@ import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/users/guard/GqlAuthGuard";
 import { UploadService } from "src/upload.service";
 import { FileUpload, GraphQLUpload } from "graphql-upload-ts";
-import {PubSub} from 'graphql-subscriptions'
+import {PubSub} from 'graphql-subscriptions';
 import { Messages } from "./messages.entity";
 import { DataLoaderService } from "src/loader.service";
 import { UserResponse } from "src/users/dto/user.dto";
@@ -19,16 +19,6 @@ export class MessageResolver {
         private uploadService: UploadService,
         private LoaderService:DataLoaderService
     ){}
-    
-    @Query(()=> SingleChat)
-    @UseGuards(JwtAuthGuard)
-    async getChat(
-        @Context('req') req:any,
-        @Args('friendId') friendId:string
-    ){
-        const chat = await this.messageService.getChat(req.user.id,friendId);
-        return chat
-    }
     
     @ResolveField('sender',()=>UserResponse)
     async sender(@Parent() messages:Messages){
@@ -59,6 +49,28 @@ export class MessageResolver {
     })
     newMessage(@Args('chatId') chatId: number){
         return pubSub.asyncIterableIterator('newMessage');
+    }
+
+    @Mutation(()=>Message)
+    @UseGuards(JwtAuthGuard)
+    async sendGroupMessage(
+        @Context('req') req:any,
+        @Args('groupId') groupId:number,
+        @Args('content') content:string,
+        @Args({name:'files' , type:() =>[GraphQLUpload],nullable:true}) files:FileUpload[]
+    ){
+        const images = await this.uploadService.uploadImages(files);
+        const message = await this.messageService.sendGroupMessage(req.user.id,groupId,content,images);
+
+        await pubSub.publish('newGroupMessage',{newGroupMessage: message});
+        return message
+    }
+
+    @Subscription(()=>Message,{
+        filter: (payload,variables)=> payload.newGroupMessage.groupId === variables.groupId
+    })
+    newGroupMessage(@Args('groupId') groupId: number){
+        return pubSub.asyncIterableIterator('newGroupMessage');
     }
 
 }

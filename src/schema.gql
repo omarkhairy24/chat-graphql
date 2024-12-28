@@ -23,6 +23,27 @@ type FriendRequests {
   reciever: UserResponse!
 }
 
+type Group {
+  id: Float!
+  name: String!
+  image: String!
+  members: [GroupUsers!]!
+  user: [UserResponse!]!
+}
+
+type GroupUsers {
+  id: Float!
+  groupId: Float!
+  userId: String!
+  role: Role!
+  user: UserResponse!
+}
+
+enum Role {
+  member
+  admin
+}
+
 type Message {
   id: String!
   senderId: String!
@@ -58,8 +79,10 @@ type Query {
   Me: UserResponse!
   getPendings: [FriendRequests!]!
   getMyRequests: [FriendRequests!]!
-  getChats: [Chat!]!
+  getGroups: [Group!]!
+  group(groupId: Float!): Group!
   getChat(friendId: String!): SingleChat!
+  getChats: [Chat!]!
 }
 
 type Mutation {
@@ -71,7 +94,13 @@ type Mutation {
   sendRequest(receiverId: String!): String!
   acceptRequest(senderId: String!): String!
   rejectRequest(senderId: String!): String!
+  addMemberSearch(groupId: Float!, query: String!): [UserResponse!]!
+  addMember(groupId: Float!, userId: String!): UserResponse!
+  addAdmin(groupId: Float!, memberId: String!): UserResponse!
+  removeMember(groupId: Float!, memberId: String!): UserResponse!
+  createGroup(name: String!, file: Upload!): Group!
   sendMessage(chatId: Float!, content: String!, files: [Upload!]): Message!
+  sendGroupMessage(groupId: Float!, content: String!, files: [Upload!]): Message!
 }
 
 input RegisterInput {
@@ -106,4 +135,5 @@ scalar Upload
 
 type Subscription {
   newMessage(chatId: Float!): Message!
+  newGroupMessage(groupId: Float!): Message!
 }

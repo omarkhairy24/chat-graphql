@@ -1,6 +1,6 @@
 import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver, Subscription } from "@nestjs/graphql";
 import { MessagesService } from "./chat.service";
-import { Chat } from "./dto/chat.dto";
+import { Chat, SingleChat } from "./dto/chat.dto";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/users/guard/GqlAuthGuard";
 import { UploadService } from "src/upload.service";
@@ -19,6 +19,16 @@ export class Chatesolver {
         private uploadService: UploadService,
         private LoaderService:DataLoaderService
     ){}
+
+    @Query(()=> SingleChat)
+        @UseGuards(JwtAuthGuard)
+        async getChat(
+            @Context('req') req:any,
+            @Args('friendId') friendId:string
+        ){
+            const chat = await this.messageService.getChat(req.user.id,friendId);
+            return chat
+        }
 
     
     @Query(()=>[Chat])

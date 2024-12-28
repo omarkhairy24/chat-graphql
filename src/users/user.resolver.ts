@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
+import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
 import { User } from "./user.entity";
 import { AuthService } from "./auth.service";
 import { RegisterInput } from "./dto/register.dto";
@@ -11,7 +11,6 @@ import { JwtAuthGuard } from "./guard/GqlAuthGuard";
 import { UsersService } from "./users.service";
 import { UserInfoInput } from "./dto/user-info.dto";
 import { FileUpload, GraphQLUpload } from "graphql-upload-ts";
-import { DataLoaderService } from "src/loader.service";
 
 @Resolver(()=>User)
 export class AuthResolver {
