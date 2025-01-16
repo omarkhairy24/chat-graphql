@@ -11,7 +11,6 @@ export class LikeResolver{
         private likeService: LikesService
     ){}
 
-
     @Mutation(()=>Boolean)
     @UseGuards(JwtAuthGuard)
     async like(
