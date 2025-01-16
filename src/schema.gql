@@ -55,12 +55,6 @@ type Post {
   user: UserResponse
 }
 
-type LikeEntity {
-  id: Float!
-  userId: String!
-  postId: String!
-}
-
 type CommentsEntity {
   id: Float!
   userId: String!
@@ -127,7 +121,7 @@ type Query {
   Me: UserResponse!
   feed: [Post!]!
   getPost(postId: Float!): Post!
-  find: LikeEntity!
+  find: CommentsEntity!
   getChat(friendId: String!): SingleChat!
   getChats: [Chat!]!
   getGroups: [Group!]!

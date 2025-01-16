@@ -1,4 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
+import { Args, Context, Mutation, Resolver } from "@nestjs/graphql";
 import { LikeEntity } from "./likes.entity";
 import { LikesService } from "./likes.service";
 import { UseGuards } from "@nestjs/common";
@@ -11,8 +11,6 @@ export class LikeResolver{
         private likeService: LikesService
     ){}
 
-    @Query(()=>LikeEntity)
-    async find(){}
 
     @Mutation(()=>Boolean)
     @UseGuards(JwtAuthGuard)

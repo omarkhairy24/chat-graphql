@@ -31,21 +31,27 @@ import { FollowModule } from './follow/follow.module';
         'graphql-ws':true
       }
      }),
-     SequelizeModule.forRootAsync({
-      inject:[ConfigService],
-      useFactory:(config:ConfigService)=>{
-        return {
-          dialect:config.get<string>('DB_TYPE') as Dialect,
-          host: config.get<string>('host'),
-          port: config.get<number>('port'),
-          username:config.get<string>('username') ,
-          password: config.get<string>('password'),
-          autoLoadModels:true,
-          storage:config.get<string>('DB_NAME'),
-          database:config.get<string>('DB_NAME'),
-          synchronize:true
-        }
-      }
+    //  SequelizeModule.forRootAsync({
+    //   inject:[ConfigService],
+    //   useFactory:(config:ConfigService)=>{
+    //     return {
+    //       dialect:config.get<string>('DB_TYPE') as Dialect,
+    //       host: config.get<string>('host'),
+    //       port: config.get<number>('port'),
+    //       username:config.get<string>('username') ,
+    //       password: config.get<string>('password'),
+    //       autoLoadModels:true,
+    //       storage:config.get<string>('DB_NAME'),
+    //       database:config.get<string>('DB_NAME'),
+    //       synchronize:true
+    //     }
+    //   }
+    // }),
+    SequelizeModule.forRoot({
+      dialect:'sqlite',
+      storage:'db.sqlite',
+      synchronize:true,
+      autoLoadModels:true
     }),
     UsersModule, 
     MailModule,
