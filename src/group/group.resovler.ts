@@ -6,8 +6,8 @@ import { FileUpload, GraphQLUpload } from "graphql-upload-ts";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/users/guard/GqlAuthGuard";
 import { UserResponse } from "src/users/dto/user.dto";
-import { DataLoaderService } from "src/loader.service";
 import { GroupUsers } from "./group.users.entity";
+import { UsersService } from "src/users/users.service";
 
 
 @Resolver(()=>Group)
@@ -15,7 +15,7 @@ export class GroupResolver {
     constructor(
         private groupService: GroupService,
         private uploadService: UploadService,
-        private loaderService: DataLoaderService
+        private userService: UsersService
     ){}
 
     @Query(()=>[Group])
@@ -37,12 +37,12 @@ export class GroupResolver {
 
     @ResolveField('members',()=>[GroupUsers])
     async members(@Parent() group:Group){
-        return await this.loaderService.groupMemberLoader.load(group.id);
+        return await this.groupService.groupMemberLoader.load(group.id);
     }
 
     @ResolveField('user',()=>[UserResponse])
     async user(@Parent() groupUsers:GroupUsers){
-        return await this.loaderService.userLoader.load(groupUsers.userId);
+        return await this.userService.userLoader.load(groupUsers.userId);
     }
 
     @Mutation(()=>Group)

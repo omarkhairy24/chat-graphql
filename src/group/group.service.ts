@@ -3,6 +3,8 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Group } from './group.entity';
 import { GroupUsers, Role } from './group.users.entity';
 import { Sequelize } from 'sequelize-typescript';
+import * as DataLoader from 'dataloader';
+
 
 @Injectable()
 export class GroupService {
@@ -33,6 +35,19 @@ export class GroupService {
             }
         })
     }
+
+    public groupMemberLoader = new DataLoader(async (groupIds:number[])=>{
+            const groupMembers = await this.findMembresByIds(groupIds);
+            const memberMap = new Map();
+            groupMembers.forEach(member=>{
+                if(!memberMap.has(member.groupId)){
+                    memberMap.set(member.groupId, [])
+                }
+                memberMap.get(member.groupId).push(member)
+            })
+            
+            return groupIds.map((id)=> memberMap.get(id)||[]);
+        })
 
     async getGroup(groupId:number,userId:string){
         const member = await this.gUsers.findOne({

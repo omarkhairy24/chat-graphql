@@ -34,6 +34,10 @@ export class User extends Model{
     @Field({nullable:true})
     image: string;
 
+    @Column({ allowNull: true })
+    @Field({nullable:true})
+    bio:string;
+
     @Column
     passwordChangedAt:Date;
 

@@ -5,6 +5,8 @@ import { Op } from 'sequelize';
 import { UserInfoInput } from './dto/user-info.dto';
 import * as fs from 'fs';
 import { UploadService } from "src/upload.service";
+import * as DataLoader from 'dataloader';
+
 
 @Injectable()
 export class UsersService {
@@ -19,6 +21,16 @@ export class UsersService {
                 id: userIds,
             },
         });
+    }
+
+    public userLoader = new DataLoader(async (usersIds:string[])=>{
+        const users = await this.findAll(usersIds);
+        const userMap = new Map(users.map((user) => [user.id, user]));
+        return usersIds.map((id) => userMap.get(id));
+    });
+
+    async getUser(userId:string){
+        return await this.repo.findByPk(userId)
     }
 
     async searchUser(query:string){

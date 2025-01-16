@@ -1,14 +1,12 @@
-import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver, Subscription } from "@nestjs/graphql";
+import { Args, Context, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { MessagesService } from "./chat.service";
 import { Chat, SingleChat } from "./dto/chat.dto";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/users/guard/GqlAuthGuard";
-import { UploadService } from "src/upload.service";
-import {PubSub} from 'graphql-subscriptions'
-import { DataLoaderService } from "src/loader.service";
-import { UserResponse } from "src/users/dto/user.dto";
+import {PubSub} from 'graphql-subscriptions';
 import { User } from "src/users/user.entity";
-import { ChatRoom } from "src/friends/chat.entity";
+import { ChatRoom } from "./chat.entity";
+import { UsersService } from "src/users/users.service";
 
 const pubSub = new PubSub();
 
@@ -16,8 +14,7 @@ const pubSub = new PubSub();
 export class Chatesolver {
     constructor(
         private messageService: MessagesService,
-        private uploadService: UploadService,
-        private LoaderService:DataLoaderService
+        private userService:UsersService
     ){}
 
     @Query(()=> SingleChat)
@@ -42,11 +39,11 @@ export class Chatesolver {
     
     @ResolveField('user',()=> User)
     async user(@Parent() chat:ChatRoom){
-        return this.LoaderService.userLoader.load(chat.userId)
+        return this.userService.userLoader.load(chat.userId)
     }
 
     @ResolveField('friend',()=> User)
     async friend(@Parent() chat:ChatRoom){
-        return this.LoaderService.userLoader.load(chat.friendId)
+        return this.userService.userLoader.load(chat.friendId)
     }
 }

@@ -3,27 +3,38 @@ import { InjectModel } from '@nestjs/sequelize';
 import { Messages } from './messages.entity';
 import {Sequelize} from 'sequelize-typescript'
 import { QueryTypes } from 'sequelize';
-import { FriendsService } from 'src/friends/friends.service';
 import { GroupService } from 'src/group/group.service';
+import { ChatRoom } from './chat.entity';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class MessagesService {
     constructor(
         @InjectModel(Messages) private messages: typeof Messages,
-        private chat: FriendsService,
+        @InjectModel(ChatRoom) private chat: typeof ChatRoom,
         private groupService: GroupService,
         private sequelize: Sequelize
     ){}
 
     async sendMessage(
         senderId:string,
-        // receiverId:string,
-        chatId:number,
+        receiverId:string,
         content:string, 
         images:string[]){
-        // const chat = await this.chat.find(senderId,receiverId);
-        const chat = await this.chat.findById(chatId);
-        if(!chat) throw new NotFoundException('The user is not in your friends list. Please ensure you have added them as a friend.');
+        let chat = await this.chat.findOne({
+            where:{
+                [Op.or]:[
+                    {userId:senderId,friendId:receiverId},
+                    {userId:receiverId,friendId:senderId},
+                ]
+            }
+        })
+        if(!chat) {
+            chat = await this.chat.create({
+                userId:senderId,
+                friendId:receiverId
+            });
+        }
         
         if(!content && !images) throw new BadRequestException('you must provide content or image');
 
@@ -58,7 +69,14 @@ export class MessagesService {
     }
 
     async getChats(userId:string){
-        return this.chat.getChats(userId)
+        return this.chat.findAll({
+            where:{
+                [Op.or]:[
+                    {userId},
+                    {friendId:userId}
+                ]
+            }
+        })
     }
 
     async getChat(userId:string,friendId:string){

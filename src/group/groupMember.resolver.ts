@@ -3,20 +3,20 @@ import { GroupService } from "./group.service";
 import { UseGuards } from "@nestjs/common";
 import { JwtAuthGuard } from "src/users/guard/GqlAuthGuard";
 import { UserResponse } from "src/users/dto/user.dto";
-import { DataLoaderService } from "src/loader.service";
 import { GroupUsers } from "./group.users.entity";
+import { UsersService } from "src/users/users.service";
 
 
 @Resolver(()=>GroupUsers)
 export class GroupMemberResolver {
     constructor(
         private groupService: GroupService,
-        private loaderService: DataLoaderService
+        private userService: UsersService
     ){}
 
     @ResolveField('user',()=>UserResponse)
     async user(@Parent() groupUsers:GroupUsers){
-        return await this.loaderService.userLoader.load(groupUsers.userId);
+        return await this.userService.userLoader.load(groupUsers.userId);
     }
 
     @Mutation(()=>[UserResponse])

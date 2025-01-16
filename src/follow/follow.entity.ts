@@ -4,7 +4,7 @@ import { User } from 'src/users/user.entity';
 
 @Table
 @ObjectType()
-export class FriendRequests extends Model {
+export class FollowEntity extends Model {
 
     @PrimaryKey
     @AutoIncrement
@@ -13,20 +13,19 @@ export class FriendRequests extends Model {
     id?: number;
 
     @ForeignKey(() => User)
-    @Column(DataType.UUID)
+    @Column
     @Field()
-    senderId: string;
+    followerId: string;
 
     @BelongsTo(() => User)
-    sender: User;
+    follower: User;
 
     @ForeignKey(() => User)
-    @Column(DataType.UUID)
+    @Column
     @Field()
-    receiverId: string;
+    followingId: string;
 
     @BelongsTo(() => User)
-    receiver: User;
-
+    following: User;
 
 }

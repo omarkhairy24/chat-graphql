@@ -2,12 +2,26 @@
 # THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
 # ------------------------------------------------------
 
+type FollowEntity {
+  id: Float!
+  followerId: String!
+  followingId: String!
+  followerUser: UserResponse!
+  followingUser: UserResponse!
+}
+
 type UserResponse {
   id: String!
   username: String!
   name: String!
   email: String!
   image: String
+  bio: String
+  postCount: Float!
+  followerCount: Float!
+  followingCount: Float!
+  followers: [FollowEntity!]
+  following: [FollowEntity!]
 }
 
 type LoginResponse {
@@ -15,12 +29,43 @@ type LoginResponse {
   user: UserResponse!
 }
 
-type FriendRequests {
+type Comments {
+  id: String!
+  userId: String!
+  postId: String!
+  content: String!
+  user: UserResponse
+  createdAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Post {
   id: Float!
-  senderId: String!
-  receiverId: String!
-  sender: UserResponse!
-  reciever: UserResponse!
+  userId: String!
+  content: String!
+  images: [String!]!
+  likes: Float!
+  isLiked: Boolean!
+  comments(page: Float!): [Comments!]!
+  createdAt: DateTime!
+  user: UserResponse
+}
+
+type LikeEntity {
+  id: Float!
+  userId: String!
+  postId: String!
+}
+
+type CommentsEntity {
+  id: Float!
+  userId: String!
+  postId: String!
+  content: String!
 }
 
 type Group {
@@ -47,6 +92,8 @@ enum Role {
 type Message {
   id: String!
   senderId: String!
+  chatId: Float!
+  groupId: Float!
   content: String!
   images: [String!]!
   sender: UserResponse
@@ -76,13 +123,15 @@ type SingleChat {
 
 type Query {
   search_users(query: String!): [UserResponse!]!
+  user(userId: String!): UserResponse!
   Me: UserResponse!
-  getPendings: [FriendRequests!]!
-  getMyRequests: [FriendRequests!]!
-  getGroups: [Group!]!
-  group(groupId: Float!): Group!
+  feed: [Post!]!
+  getPost(postId: Float!): Post!
+  find: LikeEntity!
   getChat(friendId: String!): SingleChat!
   getChats: [Chat!]!
+  getGroups: [Group!]!
+  group(groupId: Float!): Group!
 }
 
 type Mutation {
@@ -91,16 +140,22 @@ type Mutation {
   login(input: LoginInput!): LoginResponse!
   update_password(input: UpdatePasswordInput!): UserResponse!
   updateInfo(input: UserInfoInput, file: Upload): UserResponse!
-  sendRequest(receiverId: String!): String!
-  acceptRequest(senderId: String!): String!
-  rejectRequest(senderId: String!): String!
+  createPost(files: [Upload!], input: postInput!): Post!
+  updatePost(postId: Float!, files: [Upload!], input: postInput): Post!
+  deletePost(postId: Float!): String!
+  follow(followingId: String!): FollowEntity!
+  unFollow(followingId: String!): String!
+  addComment(postId: Float!, content: String!): CommentsEntity!
+  updateComment(commentId: Float!, content: String!): CommentsEntity!
+  deleteComment(commentId: Float!): String!
+  like(postId: Float!): Boolean!
+  sendMessage(receiverId: String!, content: String!, files: [Upload!]): Message!
+  sendGroupMessage(groupId: Float!, content: String!, files: [Upload!]): Message!
   addMemberSearch(groupId: Float!, query: String!): [UserResponse!]!
   addMember(groupId: Float!, userId: String!): UserResponse!
   addAdmin(groupId: Float!, memberId: String!): UserResponse!
   removeMember(groupId: Float!, memberId: String!): UserResponse!
   createGroup(name: String!, file: Upload!): Group!
-  sendMessage(chatId: Float!, content: String!, files: [Upload!]): Message!
-  sendGroupMessage(groupId: Float!, content: String!, files: [Upload!]): Message!
 }
 
 input RegisterInput {
@@ -128,10 +183,15 @@ input UpdatePasswordInput {
 input UserInfoInput {
   name: String
   username: String
+  bio: String
 }
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
+
+input postInput {
+  content: String
+}
 
 type Subscription {
   newMessage(chatId: Float!): Message!

@@ -1,4 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import { FollowEntity } from "src/follow/follow.entity";
 
 @ObjectType()
 export class UserResponse{
@@ -17,6 +18,23 @@ export class UserResponse{
     @Field({nullable:true})
     image:string;
 
+    @Field({nullable:true})
+    bio:string;
+
+    @Field()
+    postCount:number;
+
+    @Field()
+    followerCount:number;
+
+    @Field()
+    followingCount:number;
+
+    @Field(()=>[FollowEntity],{nullable:true})
+    followers:FollowEntity[];
+
+    @Field(()=>[FollowEntity],{nullable:true})
+    following:FollowEntity[];
 }
 
 @ObjectType()

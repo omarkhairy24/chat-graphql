@@ -6,17 +6,14 @@ import { GroupUsers } from './group.users.entity';
 import { UsersModule } from 'src/users/users.module';
 import { UploadService } from 'src/upload.service';
 import { GroupResolver } from './group.resovler';
-import { DataLoaderService } from 'src/loader.service';
-import { FriendsModule } from 'src/friends/friends.module';
 import { GroupMemberResolver } from './groupMember.resolver';
 
 @Module({
   imports:[
     SequelizeModule.forFeature([Group,GroupUsers]),
     UsersModule,
-    forwardRef(()=> FriendsModule)
   ],
-  providers: [GroupMemberResolver,GroupResolver,GroupService,UploadService,DataLoaderService],
+  providers: [GroupMemberResolver,GroupResolver,GroupService,UploadService],
   exports:[GroupService]
 })
 export class GroupModule {}

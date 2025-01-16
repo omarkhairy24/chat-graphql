@@ -11,6 +11,12 @@ export class Message {
     @Field()
     senderId:string;
 
+    @Field()
+    chatId:number;
+
+    @Field()
+    groupId:number;
+
     @Field(()=>String)
     content:string;
 

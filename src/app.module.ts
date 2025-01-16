@@ -9,10 +9,13 @@ import { SequelizeModule } from '@nestjs/sequelize';
 import { MailModule } from './mail/mail.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { graphqlUploadExpress } from 'graphql-upload-ts';
-import { FriendsModule } from './friends/friends.module';
 import { MessagesModule } from './messages/messages.module';
 import { Dialect } from 'sequelize';
 import { GroupModule } from './group/group.module';
+import { PostsModule } from './posts/posts.module';
+import { CommentsModule } from './comments/comments.module';
+import { LikesModule } from './likes/likes.module';
+import { FollowModule } from './follow/follow.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -46,9 +49,12 @@ import { GroupModule } from './group/group.module';
     }),
     UsersModule, 
     MailModule,
-    FriendsModule,
     MessagesModule,
-    GroupModule
+    GroupModule,
+    PostsModule,
+    CommentsModule,
+    LikesModule,
+    FollowModule,
   ],
   controllers: [AppController],
   providers: [AppService],

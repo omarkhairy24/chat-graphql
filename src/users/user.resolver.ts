@@ -1,5 +1,4 @@
-import { Args, Context, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { User } from "./user.entity";
+import { Args, Context, Mutation, Parent, Query, ResolveField, Resolver } from "@nestjs/graphql";
 import { AuthService } from "./auth.service";
 import { RegisterInput } from "./dto/register.dto";
 import { VerifyInput } from "./dto/verify.dto";
@@ -11,17 +10,63 @@ import { JwtAuthGuard } from "./guard/GqlAuthGuard";
 import { UsersService } from "./users.service";
 import { UserInfoInput } from "./dto/user-info.dto";
 import { FileUpload, GraphQLUpload } from "graphql-upload-ts";
+import { FollowService } from "src/follow/follow.service";
+import { FollowersResponse, FollowingResponse } from "src/follow/dto/follow.dto";
+import { PostsService } from "src/posts/posts.service";
 
-@Resolver(()=>User)
+@Resolver(()=>UserResponse)
 export class AuthResolver {
     constructor (
         private authService: AuthService,
-        private userService: UsersService
+        private userService: UsersService,
+        private followService: FollowService,
+        private postsService:PostsService
     ){}
-
     @Query(()=> [UserResponse],{name:'search_users'})
     async search(@Args('query') query:string){
         return this.userService.searchUser(query);
+    }
+
+    @Query(()=>UserResponse,{name:'user'})
+    async user(
+        @Args('userId') userId:string
+    ){
+        return this.userService.getUser(userId)
+    }
+
+    @ResolveField('postCount',()=>Number)
+    async postCount(
+        @Parent() user:UserResponse
+    ){
+        return this.postsService.PostsCount(user.id);
+    }
+
+    @ResolveField('followerCount',()=>Number)
+    async followerCount(
+        @Parent() user:UserResponse
+    ){
+        return this.followService.followerCount(user.id);
+    }
+
+    @ResolveField('followingCount',()=>Number)
+    async followingCount(
+        @Parent() user:UserResponse
+    ){
+        return this.followService.followingCount(user.id);
+    }
+
+    @ResolveField('followers',()=>[FollowersResponse])
+    async followers(
+        @Parent() user:UserResponse
+    ){
+        return await this.followService.followersLoader.load(user.id);
+    }
+
+    @ResolveField('following',()=>[FollowingResponse])
+    async following(
+        @Parent() user:UserResponse
+    ){
+        return await this.followService.followingLoader.load(user.id)
     }
 
     @Query(()=> UserResponse,{name:'Me'})

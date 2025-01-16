@@ -1,12 +1,10 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { AutoIncrement, BelongsTo, Column, DataType, ForeignKey, Model, PrimaryKey, Table } from "sequelize-typescript";
-import { ChatRoom } from "./chat.entity"; 
-import { Group } from "src/group/group.entity";
 import { User } from "src/users/user.entity";
 
 @Table
 @ObjectType()
-export class Messages extends Model {
+export class PostsEntity extends Model{
 
     @PrimaryKey
     @AutoIncrement
@@ -14,33 +12,19 @@ export class Messages extends Model {
     @Field()
     id:number;
 
-    @ForeignKey(()=>ChatRoom)
-    @Column
-    chatId:number;
-
-    @BelongsTo(()=>ChatRoom)
-    chat:ChatRoom
-
-    @ForeignKey(()=>Group)
-    @Column
-    groupId:number;
-
-    @BelongsTo(()=>Group)
-    group:Group
-
     @ForeignKey(()=>User)
     @Column({allowNull:false})
     @Field({nullable:false})
-    senderId:string;
+    userId:string;
 
     @BelongsTo(()=>User)
-    sender:User
+    user:User;
 
     @Column
-    @Field({ nullable: true })
+    @Field({nullable:true})
     content:string;
 
     @Column({type:DataType.JSON})
     @Field(() => [String], { nullable: true })
-    images:string[];
+    images:string[]
 }

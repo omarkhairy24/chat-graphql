@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthService } from './auth.service';
 import { SequelizeModule } from '@nestjs/sequelize';
@@ -10,9 +10,8 @@ import { JwtModule, JwtService } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { JwtStrategy } from './guard/auth.guard';
 import { UploadService } from 'src/upload.service';
-import { DataLoaderService } from 'src/loader.service';
-import { FriendsService } from 'src/friends/friends.service';
-import { FriendsModule } from 'src/friends/friends.module';
+import { FollowModule } from 'src/follow/follow.module';
+import { PostsModule } from 'src/posts/posts.module';
 
 @Module({
   imports:[
@@ -27,7 +26,8 @@ import { FriendsModule } from 'src/friends/friends.module';
         signOptions: { expiresIn: '90d' },
       }),
     }),
-    // FriendsModule
+    PostsModule,
+    FollowModule,
   ],
   providers: [
     JwtStrategy,
@@ -37,6 +37,7 @@ import { FriendsModule } from 'src/friends/friends.module';
     UsersService,
     MailService,
     UploadService,
+    
   ],
   exports:[JwtStrategy,JwtModule,UsersService]
 })
