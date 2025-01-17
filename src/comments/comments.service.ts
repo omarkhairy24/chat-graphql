@@ -17,6 +17,7 @@ export class CommentsService {
         postIds:number[],
         page:number
     ){
+        if (page < 1) throw new BadRequestException('Page number must be 1 or greater.');
         return await this.repo.findAll({
             where:{
                 postId:postIds
@@ -49,7 +50,7 @@ export class CommentsService {
     ){
         const post = await this.postService.findOne(postId);
         if(!post) throw new NotFoundException('post not found');
-
+        if(!content || content.trim().length === 0) throw new BadRequestException('The comment must contain at least one non-whitespace character.');
         return await this.repo.create({
             userId,
             postId,

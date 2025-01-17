@@ -24,13 +24,13 @@ export class LikesService {
     }
 
     async likeCount(postId:number){
-        const likes = await this.repo.findAll({
+        const likesCount = await this.repo.count({
             where:{
                 postId
             }
         });
 
-        return likes.length;
+        return likesCount;
     }
 
     async like(

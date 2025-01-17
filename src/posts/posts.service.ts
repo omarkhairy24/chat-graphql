@@ -4,6 +4,7 @@ import { PostsEntity } from './posts.entity';
 import { postInput } from './dto/create.post.dto';
 import * as fs from 'fs';
 import { FollowService } from 'src/follow/follow.service';
+import { Op } from 'sequelize';
 
 @Injectable()
 export class PostsService {
@@ -17,7 +18,7 @@ export class PostsService {
         const followings = following.map(follow => follow.followingId);
         const posts = await this.repo.findAll({
             where:{
-                userId:followings
+                userId:{[Op.in]:followings}
             },
             order:[['createdAt','DESC']]
         });
@@ -26,13 +27,13 @@ export class PostsService {
     }
 
     async PostsCount(userId:string){
-        const posts = await this.repo.findAll({
+        const postsCount = await this.repo.count({
             where:{
                 userId
             }
         });
 
-        return posts.length;
+        return postsCount;
     }
 
     async findOne(

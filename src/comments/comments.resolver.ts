@@ -15,9 +15,6 @@ export class CommentsResolver {
         private userService:UsersService
     ){}
 
-    @Query(()=>CommentsEntity)
-    async find(){}
-
     @ResolveField('user',()=> UserResponse)
     async user(
         @Parent() comment:Comments,

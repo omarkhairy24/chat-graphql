@@ -11,7 +11,7 @@ export class LikeEntity extends Model {
     @AutoIncrement
     @Column(DataType.BIGINT)
     @Field()
-    id?: number;
+    id: number;
 
     @ForeignKey(()=>User)
     @Column({allowNull:false})
@@ -24,7 +24,7 @@ export class LikeEntity extends Model {
     @ForeignKey(()=>PostsEntity)
     @Column({allowNull:false})
     @Field({nullable:false})
-    postId:string;
+    postId:number;
 
     @BelongsTo(()=>PostsEntity)
     post:PostsEntity;

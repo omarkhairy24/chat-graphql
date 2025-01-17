@@ -52,13 +52,13 @@ export class FollowService {
 
 
     async followerCount(followingId:string){
-        const followerCount = await this.repo.findAll({
+        const followerCount = await this.repo.count({
             where:{
                 followingId
             }
         });
 
-        return followerCount.length;
+        return followerCount;
     }
 
     async userFollowing(followerId:string){
@@ -70,13 +70,13 @@ export class FollowService {
     }
 
     async followingCount(followerId:string){
-        const followingCount = await this.repo.findAll({
+        const followingCount = await this.repo.count({
             where:{
                 followerId
             }
         });
 
-        return followingCount.length;
+        return followingCount;
     }
 
     async followers(followingsId:string[]){

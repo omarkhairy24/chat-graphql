@@ -121,7 +121,6 @@ type Query {
   Me: UserResponse!
   feed: [Post!]!
   getPost(postId: Float!): Post!
-  find: CommentsEntity!
   getChat(friendId: String!): SingleChat!
   getChats: [Chat!]!
   getGroups: [Group!]!
